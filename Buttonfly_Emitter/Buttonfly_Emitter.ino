@@ -11,38 +11,11 @@
 #include <SPI.h>
 #include <RH_RF95.h>
 
-  #define RFM95_CS    8
-  #define RFM95_INT   3
-  #define RFM95_RST   4
+#define BUTTON_INPUT A0
 
-
-/* Some other possible setups include:
-
-// Feather 32u4:
-#define RFM95_CS   8
-#define RFM95_RST  4
-#define RFM95_INT  7
-
-// Feather M0:
-#define RFM95_CS   8
-#define RFM95_RST  4
-#define RFM95_INT  3
-
-// Arduino shield:
-#define RFM95_CS  10
-#define RFM95_RST  9
-#define RFM95_INT  7
-
-// Feather 32u4 w/wing:
-#define RFM95_RST 11  // "A"
-#define RFM95_CS  10  // "B"
-#define RFM95_INT  2  // "SDA" (only SDA/SCL/RX/TX have IRQ!)
-
-// Feather m0 w/wing:
-#define RFM95_RST 11  // "A"
-#define RFM95_CS  10  // "B"
-#define RFM95_INT  6  // "D"
-*/
+#define RFM95_CS    8
+#define RFM95_INT   3
+#define RFM95_RST   4
 
 // Change to 434.0 or other frequency, must match RX's freq!
 #define RF95_FREQ 433.0
@@ -51,11 +24,15 @@
 RH_RF95 rf95(RFM95_CS, RFM95_INT);
 
 void setup() {
+  pinMode(BUTTON_INPUT, INPUT_PULLUP);
+  pinMode(13, OUTPUT);
+  digitalWrite(13, LOW);
+
   pinMode(RFM95_RST, OUTPUT);
   digitalWrite(RFM95_RST, HIGH);
 
   Serial.begin(115200);
-  while (!Serial) delay(1);
+ // while (!Serial) delay(1);
   delay(100);
 
   Serial.println("Feather LoRa TX Test!");
@@ -90,8 +67,25 @@ void setup() {
 
 int16_t packetnum = 0;  // packet counter, we increment per xmission
 
+//char radiopacketB[5] = "Butt";
+int buttonState;            // the current reading from the input pin
+
 void loop() {
-  delay(1000); // Wait 1 second between transmits, could also 'sleep' here!
+
+  ReadButtonDebounce();
+
+  // if(buttonState == LOW){
+  //   Serial.println("LOW");
+  // } else if(buttonState == HIGH){
+  //   Serial.println("HIGH");
+  // }
+  readReply();
+
+}
+
+void testHelloWorld()
+{
+delay(1000); // Wait 1 second between transmits, could also 'sleep' here!
   Serial.println("Transmitting..."); // Send a message to rf95_server
 
   char radiopacket[20] = "Hello World #      ";
@@ -124,5 +118,19 @@ void loop() {
   } else {
     Serial.println("No reply, is there a listener around?");
   }
+}
 
+  uint8_t buf[RH_RF95_MAX_MESSAGE_LEN];
+  uint8_t len = sizeof(buf);
+
+void readReply(){
+   //Serial.println("Waiting for reply...");
+if (rf95.recv(buf, &len)) {
+      digitalWrite(LED_BUILTIN, HIGH);
+      RH_RF95::printBuffer("Received: ", buf, len);
+      Serial.print("Got: ");
+      Serial.println((char*)buf);
+       Serial.print("RSSI: ");
+      Serial.println(rf95.lastRssi(), DEC);
+    }
 }

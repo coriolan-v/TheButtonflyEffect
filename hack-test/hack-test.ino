@@ -1,5 +1,6 @@
 
 #define button_pin 10
+//#define LED_pin BUILTIN_LED
 
 
 String inputString = "";      // a String to hold incoming data
@@ -17,6 +18,7 @@ void setup() {
   Serial.begin(115200);
   // initialize digital pin LED_BUILTIN as an output.
   pinMode(button_pin, INPUT);
+   //pinMode(LED_BUILTIN, INPUT);
 
     inputString.reserve(200);
 }
