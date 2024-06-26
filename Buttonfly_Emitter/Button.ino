@@ -33,12 +33,21 @@ void ReadButtonDebounce() {
       if(buttonState == LOW){
         Serial.println("Button pressed");
 
+ digitalWrite(RFM95_RST, HIGH);
+  delay(10);
+
+        initRadio();
+
         rf95.send((uint8_t *)"butt", 5);
 
         delay(10);
         rf95.waitPacketSent();
 
         Serial.println("Message sent");
+
+        rf95.sleep();
+        digitalWrite(RFM95_RST, LOW);
+        //radio.sleep();
       }
 
     }

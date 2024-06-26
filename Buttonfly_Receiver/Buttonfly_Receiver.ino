@@ -70,6 +70,10 @@ void setup() {
   // If you are using RFM95/96/97/98 modules which uses the PA_BOOST transmitter pin, then
   // you can set transmitter powers from 5 to 23 dBm:
   rf95.setTxPower(23, false);
+
+  //rf95.sleep();
+
+  //rf95.
 }
 
 uint8_t expected_buf[] = { 98, 117, 116, 116, 0 };

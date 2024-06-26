@@ -40,6 +40,16 @@ void setup() {
   // manual reset
   digitalWrite(RFM95_RST, LOW);
   delay(10);
+  
+  initRadio();
+
+  rf95.sleep();
+  digitalWrite(RFM95_RST, LOW);
+  //radio.sleep();
+}
+
+void initRadio()
+{
   digitalWrite(RFM95_RST, HIGH);
   delay(10);
 
